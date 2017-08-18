@@ -7,6 +7,7 @@ import glob
 import json
 import subprocess
 import argparse
+import distutils.spawn
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -50,14 +51,25 @@ class CadmiumWindow(Gtk.Window):
         Gtk.main_quit()
 
 
+def find_chrome():
+    for chrome in ['google-chrome', 'chromium']:
+        chrome_executable = distutils.spawn.find_executable(chrome)
+        if chrome_executable:
+            chrome_config_path = os.path.expanduser('~/.config/{}/'.format(chrome))
+            return (chrome_executable, chrome_config_path)
+    return (None, None)
+
+
 def cadmium():
+    (chrome_executable, chrome_config_path) = find_chrome()
     parser = argparse.ArgumentParser()
     parser.add_argument('url', nargs='?', help='The URL to open in Chrome')
-    parser.add_argument('--chrome-binary', help='Which Chrome binary to use (default: %(default)s)', default='google-chrome')
+    parser.add_argument('--chrome-binary', help='Which Chrome binary to use (default: %(default)s)', default=chrome_executable)
+    parser.add_argument('--chrome-config-path', help='Which Chrome config path to use (default: %(default)s)', default=chrome_config_path)
     args = parser.parse_args()
 
     profiles = {}
-    for profile_preferences in glob.glob(os.path.expanduser('~/.config/google-chrome/*/Preferences')):
+    for profile_preferences in glob.glob(os.path.join(args.chrome_config_path, '*', 'Preferences')):
         (profile_path, _) = os.path.split(profile_preferences)
         (_, profile_directory) = os.path.split(profile_path)
         if profile_directory == 'System Profile':
