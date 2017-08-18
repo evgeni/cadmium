@@ -26,9 +26,16 @@ class CadmiumWindow(Gtk.Window):
             button.connect("clicked", self.click_profile_button)
             vbox.pack_start(button, True, True, 0)
 
+        button = Gtk.Button.new_with_label("Incognito")
+        button.connect("clicked", self.click_incognito_button)
+        vbox.pack_start(button, True, True, 0)
+
     def click_profile_button(self, button):
         button_label = button.get_label()
         print("To open in '{0}' google-chrome --profile-directory='{1}'".format(button_label, self.profiles[button_label]))
+
+    def click_incognito_button(self, button):
+        print("To open in 'Incognito' google-chrome --incognito'")
 
 
 def cadmium():
