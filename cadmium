@@ -32,10 +32,16 @@ class CadmiumWindow(Gtk.Window):
 
     def click_profile_button(self, button):
         button_label = button.get_label()
-        print("To open in '{0}' google-chrome --profile-directory='{1}'".format(button_label, self.profiles[button_label]))
+        self.run_chrome(button_label, ["--profile-directory='{0}'".format(self.profiles[button_label])], None)
 
     def click_incognito_button(self, button):
-        print("To open in 'Incognito' google-chrome --incognito'")
+        self.run_chrome('Incognito', ['--incognito'], None)
+
+    def run_chrome(self, profile_name, params=[], url=None):
+        if url:
+            params.append(url)
+        cmd = ['google-chrome'] + params
+        print("To open in '{0}' {1}".format(profile_name, cmd))
 
 
 def cadmium():
