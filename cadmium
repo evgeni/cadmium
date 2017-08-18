@@ -5,6 +5,7 @@ from __future__ import print_function
 import os
 import glob
 import json
+import subprocess
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -32,7 +33,7 @@ class CadmiumWindow(Gtk.Window):
 
     def click_profile_button(self, button):
         button_label = button.get_label()
-        self.run_chrome(button_label, ["--profile-directory='{0}'".format(self.profiles[button_label])], None)
+        self.run_chrome(button_label, ["--profile-directory={0}".format(self.profiles[button_label])], None)
 
     def click_incognito_button(self, button):
         self.run_chrome('Incognito', ['--incognito'], None)
@@ -41,7 +42,8 @@ class CadmiumWindow(Gtk.Window):
         if url:
             params.append(url)
         cmd = ['google-chrome'] + params
-        print("To open in '{0}' {1}".format(profile_name, cmd))
+        print("Starting Chrome with '{0}' profile: {1}".format(profile_name, cmd))
+        subprocess.call(cmd)
 
 
 def cadmium():
