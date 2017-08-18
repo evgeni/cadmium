@@ -6,6 +6,7 @@ import os
 import glob
 import json
 import subprocess
+import argparse
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -14,9 +15,10 @@ from gi.repository import Gtk
 
 class CadmiumWindow(Gtk.Window):
 
-    def __init__(self, profiles):
+    def __init__(self, profiles, url):
         Gtk.Window.__init__(self, title="Cadmium")
         self.profiles = profiles
+        self.url = url
         self.set_border_width(10)
 
         vbox = Gtk.VBox(spacing=6)
@@ -33,14 +35,14 @@ class CadmiumWindow(Gtk.Window):
 
     def click_profile_button(self, button):
         button_label = button.get_label()
-        self.run_chrome(button_label, ["--profile-directory={0}".format(self.profiles[button_label])], None)
+        self.run_chrome(button_label, ["--profile-directory={0}".format(self.profiles[button_label])])
 
     def click_incognito_button(self, button):
-        self.run_chrome('Incognito', ['--incognito'], None)
+        self.run_chrome('Incognito', ['--incognito'])
 
-    def run_chrome(self, profile_name, params=[], url=None):
-        if url:
-            params.append(url)
+    def run_chrome(self, profile_name, params=[]):
+        if self.url:
+            params.append(self.url)
         cmd = ['google-chrome'] + params
         print("Starting Chrome with '{0}' profile: {1}".format(profile_name, cmd))
         subprocess.call(cmd)
@@ -48,6 +50,10 @@ class CadmiumWindow(Gtk.Window):
 
 
 def cadmium():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('url', nargs='?', help='The URL to open in Chrome')
+    args = parser.parse_args()
+
     profiles = {}
     for profile_preferences in glob.glob(os.path.expanduser('~/.config/google-chrome/*/Preferences')):
         (profile_path, _) = os.path.split(profile_preferences)
@@ -58,7 +64,7 @@ def cadmium():
             preferences = json.load(preferences_file)
             profiles[preferences['profile']['name']] = profile_directory
 
-    cwin = CadmiumWindow(profiles)
+    cwin = CadmiumWindow(profiles, args.url)
     cwin.connect("delete-event", Gtk.main_quit)
     cwin.show_all()
     Gtk.main()
