@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+
+from __future__ import print_function
+
+import os
+import glob
+import json
+
+
+def cadmium():
+    profiles = []
+    for profile_preferences in glob.glob(os.path.expanduser('~/.config/google-chrome/*/Preferences')):
+        (profile_path, _) = os.path.split(profile_preferences)
+        (_, profile_directory) = os.path.split(profile_path)
+        if profile_directory == 'System Profile':
+            continue
+        with open(profile_preferences, 'r') as preferences_file:
+            preferences = json.load(preferences_file)
+            profiles.append({'directory': profile_directory, 'name': preferences['profile']['name']})
+    for profile in profiles:
+        print("To open in '{name}' google-chrome --profile-directory='{directory}'".format(**profile))
+
+if __name__ == '__main__':
+    cadmium()
