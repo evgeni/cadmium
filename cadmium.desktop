@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Cadmium
+GenericName=Web Browser
+Exec=cadmium %U
+Terminal=false
+Icon=cadmium
+Type=Application
+Categories=Network;WebBrowser;
+MimeType=text/html;text/xml;application/xhtml_xml;image/webp;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ftp;
