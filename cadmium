@@ -44,6 +44,7 @@ class CadmiumWindow(Gtk.Window):
         cmd = ['google-chrome'] + params
         print("Starting Chrome with '{0}' profile: {1}".format(profile_name, cmd))
         subprocess.call(cmd)
+        Gtk.main_quit()
 
 
 def cadmium():
