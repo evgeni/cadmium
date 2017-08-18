@@ -15,10 +15,11 @@ from gi.repository import Gtk
 
 class CadmiumWindow(Gtk.Window):
 
-    def __init__(self, profiles, url):
+    def __init__(self, profiles, args):
         Gtk.Window.__init__(self, title="Cadmium")
         self.profiles = profiles
-        self.url = url
+        self.url = args.url
+        self.chrome_binary = args.chrome_binary
         self.set_border_width(10)
 
         vbox = Gtk.VBox(spacing=6)
@@ -43,7 +44,7 @@ class CadmiumWindow(Gtk.Window):
     def run_chrome(self, profile_name, params=[]):
         if self.url:
             params.append(self.url)
-        cmd = ['google-chrome'] + params
+        cmd = [self.chrome_binary] + params
         print("Starting Chrome with '{0}' profile: {1}".format(profile_name, cmd))
         subprocess.call(cmd)
         Gtk.main_quit()
@@ -52,6 +53,7 @@ class CadmiumWindow(Gtk.Window):
 def cadmium():
     parser = argparse.ArgumentParser()
     parser.add_argument('url', nargs='?', help='The URL to open in Chrome')
+    parser.add_argument('--chrome-binary', help='Which Chrome binary to use (default: %(default)s)', default='google-chrome')
     args = parser.parse_args()
 
     profiles = {}
@@ -64,7 +66,7 @@ def cadmium():
             preferences = json.load(preferences_file)
             profiles[preferences['profile']['name']] = profile_directory
 
-    cwin = CadmiumWindow(profiles, args.url)
+    cwin = CadmiumWindow(profiles, args)
     cwin.connect("delete-event", Gtk.main_quit)
     cwin.show_all()
     Gtk.main()
