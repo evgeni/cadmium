@@ -6,6 +6,32 @@ import os
 import glob
 import json
 
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
+
+
+class CadmiumWindow(Gtk.Window):
+
+    def __init__(self, profiles):
+        Gtk.Window.__init__(self, title="Cadmium")
+        self.profiles = profiles
+        self.set_border_width(10)
+
+        vbox = Gtk.VBox(spacing=6)
+        self.add(vbox)
+
+        for profile in profiles:
+            button = Gtk.Button.new_with_label(profile['name'])
+            button.connect("clicked", self.click_profile_button)
+            vbox.pack_start(button, True, True, 0)
+
+    def click_profile_button(self, button):
+        button_label = button.get_label()
+        for profile in self.profiles:
+            if profile['name'] == button_label:
+                print("To open in '{name}' google-chrome --profile-directory='{directory}'".format(**profile))
+
 
 def cadmium():
     profiles = []
@@ -17,8 +43,11 @@ def cadmium():
         with open(profile_preferences, 'r') as preferences_file:
             preferences = json.load(preferences_file)
             profiles.append({'directory': profile_directory, 'name': preferences['profile']['name']})
-    for profile in profiles:
-        print("To open in '{name}' google-chrome --profile-directory='{directory}'".format(**profile))
+
+    cwin = CadmiumWindow(profiles)
+    cwin.connect("delete-event", Gtk.main_quit)
+    cwin.show_all()
+    Gtk.main()
 
 if __name__ == '__main__':
     cadmium()
