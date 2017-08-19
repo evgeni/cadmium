@@ -64,6 +64,19 @@ def find_chrome():
     return (None, None)
 
 
+def find_chrome_profiles(chrome_config_path):
+    profiles = {}
+    for profile_preferences in glob.glob(os.path.join(chrome_config_path, '*', 'Preferences')):
+        (profile_path, _) = os.path.split(profile_preferences)
+        (_, profile_directory) = os.path.split(profile_path)
+        if profile_directory == 'System Profile':
+            continue
+        with open(profile_preferences, 'r') as preferences_file:
+            preferences = json.load(preferences_file)
+            profiles[preferences['profile']['name']] = profile_directory
+    return profiles
+
+
 def cadmium():
     (chrome_executable, chrome_config_path) = find_chrome()
     parser = argparse.ArgumentParser()
@@ -72,16 +85,7 @@ def cadmium():
     parser.add_argument('--chrome-config-path', help='Which Chrome config path to use (default: %(default)s)', default=chrome_config_path)
     args = parser.parse_args()
 
-    profiles = {}
-    for profile_preferences in glob.glob(os.path.join(args.chrome_config_path, '*', 'Preferences')):
-        (profile_path, _) = os.path.split(profile_preferences)
-        (_, profile_directory) = os.path.split(profile_path)
-        if profile_directory == 'System Profile':
-            continue
-        with open(profile_preferences, 'r') as preferences_file:
-            preferences = json.load(preferences_file)
-            profiles[preferences['profile']['name']] = profile_directory
-
+    profiles = find_chrome_profiles(args.chrome_config_path)
     cwin = CadmiumWindow(profiles, args)
     cwin.connect("delete-event", Gtk.main_quit)
     cwin.show_all()
