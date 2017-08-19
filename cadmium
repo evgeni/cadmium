@@ -51,11 +51,15 @@ class CadmiumWindow(Gtk.Window):
         Gtk.main_quit()
 
 
+def get_xdg_config_home():
+    return os.environ.get('XDG_CONFIG_HOME', '~/.config/')
+
+
 def find_chrome():
     for chrome in ['google-chrome', 'chromium']:
         chrome_executable = distutils.spawn.find_executable(chrome)
         if chrome_executable:
-            chrome_config_path = os.path.expanduser('~/.config/{}/'.format(chrome))
+            chrome_config_path = os.path.expanduser(os.path.join(get_xdg_config_home(), chrome))
             return (chrome_executable, chrome_config_path)
     return (None, None)
 
