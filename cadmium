@@ -77,12 +77,16 @@ def find_chrome_profiles(chrome_config_path):
     return profiles
 
 
-def cadmium():
+def get_cadmium_parser():
     (chrome_executable, chrome_config_path) = find_chrome()
     parser = argparse.ArgumentParser()
     parser.add_argument('url', nargs='?', help='The URL to open in Chrome')
     parser.add_argument('--chrome-binary', help='Which Chrome binary to use (default: %(default)s)', default=chrome_executable)
     parser.add_argument('--chrome-config-path', help='Which Chrome config path to use (default: %(default)s)', default=chrome_config_path)
+    return parser
+
+def cadmium():
+    parser = get_cadmium_parser()
     args = parser.parse_args()
 
     profiles = find_chrome_profiles(args.chrome_config_path)
