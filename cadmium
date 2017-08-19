@@ -85,6 +85,7 @@ def get_cadmium_parser():
     parser.add_argument('--chrome-config-path', help='Which Chrome config path to use (default: %(default)s)', default=chrome_config_path)
     return parser
 
+
 def cadmium():
     parser = get_cadmium_parser()
     args = parser.parse_args()
@@ -94,6 +95,7 @@ def cadmium():
     cwin.connect("delete-event", Gtk.main_quit)
     cwin.show_all()
     Gtk.main()
+
 
 if __name__ == '__main__':
     cadmium()
