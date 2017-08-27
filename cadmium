@@ -14,6 +14,22 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 
 
+_CADMIUM_WRAPPERS = {
+    'Incognito':
+        {
+            'enabled': True,
+            'params': ['--incognito'],
+            'wrapper': [],
+        },
+    'SELinux sandbox':
+        {
+            'enabled': os.path.exists('/sys/fs/selinux') and distutils.spawn.find_executable('sandbox'),
+            'params': ['--incognito', '--no-sandbox', '--disable-infobars', '--no-first-run'],
+            'wrapper': ['sandbox', '-X', '-t', 'sandbox_web_t'],
+        },
+    }
+
+
 class CadmiumWindow(Gtk.Window):
 
     def __init__(self, profiles, args):
@@ -31,26 +47,21 @@ class CadmiumWindow(Gtk.Window):
             button.connect("clicked", self.click_profile_button)
             vbox.pack_start(button, True, True, 0)
 
-        button = Gtk.Button.new_with_label("Incognito")
-        button.connect("clicked", self.click_incognito_button)
-        vbox.pack_start(button, True, True, 0)
-
-        if os.path.exists('/sys/fs/selinux') and distutils.spawn.find_executable('sandbox'):
-            button = Gtk.Button.new_with_label("SELinux Sandbox")
-            button.connect("clicked", self.click_sandbox_button)
-            vbox.pack_start(button, True, True, 0)
+        for wrapper in _CADMIUM_WRAPPERS:
+            if _CADMIUM_WRAPPERS[wrapper]['enabled']:
+                button = Gtk.Button.new_with_label(wrapper)
+                button.connect("clicked", self.click_wrapper_button)
+                vbox.pack_start(button, True, True, 0)
 
     def click_profile_button(self, button):
         button_label = button.get_label()
         self.run_chrome(button_label, ["--profile-directory={0}".format(self.profiles[button_label])])
 
-    def click_incognito_button(self, button):
+    def click_wrapper_button(self, button):
         button_label = button.get_label()
-        self.run_chrome(button_label, ['--incognito'])
-
-    def click_sandbox_button(self, button):
-        button_label = button.get_label()
-        self.run_chrome(button_label, ['--incognito', '--no-sandbox', '--disable-infobars', '--no-first-run'], ['sandbox', '-X', '-t', 'sandbox_web_t'])
+        params = _CADMIUM_WRAPPERS[button_label]['params']
+        wrapper = _CADMIUM_WRAPPERS[button_label]['wrapper']
+        self.run_chrome(button_label, params, wrapper)
 
     def run_chrome(self, profile_name, params=[], wrapper=[]):
         if self.url:
