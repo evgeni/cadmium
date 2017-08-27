@@ -1,12 +1,10 @@
 language: python
 python:
   - "2.7_with_system_site_packages"
-  - "3.4_with_system_site_packages"
 addons:
   apt:
     packages:
     - python-gi
-    - python3-gi
     - gir1.2-gtk-3.0
 # command to install dependencies
 install:
