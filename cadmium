@@ -35,17 +35,27 @@ class CadmiumWindow(Gtk.Window):
         button.connect("clicked", self.click_incognito_button)
         vbox.pack_start(button, True, True, 0)
 
+        if os.path.exists('/sys/fs/selinux') and distutils.spawn.find_executable('sandbox'):
+            button = Gtk.Button.new_with_label("SELinux Sandbox")
+            button.connect("clicked", self.click_sandbox_button)
+            vbox.pack_start(button, True, True, 0)
+
     def click_profile_button(self, button):
         button_label = button.get_label()
         self.run_chrome(button_label, ["--profile-directory={0}".format(self.profiles[button_label])])
 
     def click_incognito_button(self, button):
-        self.run_chrome('Incognito', ['--incognito'])
+        button_label = button.get_label()
+        self.run_chrome(button_label, ['--incognito'])
 
-    def run_chrome(self, profile_name, params=[]):
+    def click_sandbox_button(self, button):
+        button_label = button.get_label()
+        self.run_chrome(button_label, ['--incognito', '--no-sandbox', '--disable-infobars', '--no-first-run'], ['sandbox', '-X', '-t', 'sandbox_web_t'])
+
+    def run_chrome(self, profile_name, params=[], wrapper=[]):
         if self.url:
             params.append(self.url)
-        cmd = [self.chrome_binary] + params
+        cmd = wrapper + [self.chrome_binary] + params
         print("Starting Chrome with '{0}' profile: {1}".format(profile_name, cmd))
         subprocess.call(cmd)
         Gtk.main_quit()
