@@ -6,13 +6,12 @@ import os
 import sys
 import glob
 import json
-import subprocess
 import argparse
 import distutils.spawn
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, Gio
 
 
 _CADMIUM_WRAPPERS = {
@@ -69,7 +68,7 @@ class CadmiumWindow(Gtk.Window):
             params.append(self.url)
         cmd = wrapper + [self.chrome_binary] + params
         print("Starting Chrome with '{0}' profile: {1}".format(profile_name, cmd))
-        subprocess.call(cmd)
+        Gio.Subprocess.new(cmd, Gio.SubprocessFlags.NONE)
         Gtk.main_quit()
 
 
