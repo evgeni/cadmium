@@ -45,7 +45,8 @@ class CadmiumTestCase(unittest.TestCase):
 
     @mock.patch.dict('os.environ', {'XDG_CONFIG_HOME': '/cadmium/config'})
     @mock.patch('distutils.spawn.find_executable')
-    def _test_find_chrome(self, name, find_exec):
+    @mock.patch('os.path.exists', return_value=True)
+    def _test_find_chrome(self, name, path_exists, find_exec):
         def find_executable(executable):
             if executable == name:
                 return os.path.join('/cadmium/bin/', name)
