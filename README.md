@@ -1,6 +1,8 @@
 cadmium
 =======
 
+[![Build Status](https://travis-ci.org/evgeni/cadmium.svg?branch=master)](https://travis-ci.org/evgeni/cadmium)
+
 What is *cadmium*?
 ------------------
 `cadmium` is an interactive launcher for Google Chrome/Chromium, that allows you to select which profile to open an URL in, instead of using the last window opened.
