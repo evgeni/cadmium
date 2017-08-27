@@ -5,6 +5,8 @@ What is *cadmium*?
 ------------------
 `cadmium` is an interactive launcher for Google Chrome/Chromium, that allows you to select which profile to open an URL in, instead of using the last window opened.
 
+It also allows you to open Incognito Mode, or launch in the [SELinux Sandbox](https://selinuxproject.org/page/NB_SandBox).
+
 How does *cadmium* work?
 ------------------------
 `cadmium` scans your Chrome/Chromium settings for profile folders and displays a dialog with buttons for every of the found profiles.
