@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 import os
+import sys
 import glob
 import json
 import subprocess
@@ -81,12 +82,16 @@ def find_chrome():
         chrome_executable = distutils.spawn.find_executable(chrome)
         if chrome_executable:
             chrome_config_path = os.path.expanduser(os.path.join(get_xdg_config_home(), chrome))
+            if not os.path.exists(chrome_config_path):
+                chrome_config_path = None
             return (chrome_executable, chrome_config_path)
     return (None, None)
 
 
 def find_chrome_profiles(chrome_config_path):
     profiles = {}
+    if not chrome_config_path:
+        return profiles
     for profile_preferences in glob.glob(os.path.join(chrome_config_path, '*', 'Preferences')):
         (profile_path, _) = os.path.split(profile_preferences)
         (_, profile_directory) = os.path.split(profile_path)
@@ -110,6 +115,13 @@ def get_cadmium_parser():
 def cadmium():
     parser = get_cadmium_parser()
     args = parser.parse_args()
+
+    if not args.chrome_binary:
+        print('Could not find any Chrome or Chromium binary and you did not pass one via the command line. Exiting')
+        sys.exit(127)
+
+    if not args.chrome_config_path:
+        print('Could not find any Chrome or Chromium configs and you did not pass one via the command line.')
 
     profiles = find_chrome_profiles(args.chrome_config_path)
     cwin = CadmiumWindow(profiles, args)
