@@ -6,6 +6,11 @@ try:
 except ImportError:
     import mock
 
+import sys
+if sys.version_info.major == 2:
+    _BUILTIN_OPEN = '__builtin__.open'
+else:
+    _BUILTIN_OPEN = 'builtins.open'
 
 cadmium = imp.load_source('cadmium', 'cadmium')
 
@@ -31,7 +36,7 @@ class CadmiumTestCase(unittest.TestCase):
         self.assertEqual(profiles, {})
 
     @mock.patch('glob.glob', return_value = ['/cadmium/config/chromium/My Profile/Preferences'])
-    @mock.patch('cadmium.open', mock.mock_open(read_data='{"profile":{"name":"My"}}'))
+    @mock.patch(_BUILTIN_OPEN, mock.mock_open(read_data='{"profile":{"name":"My"}}'))
     def test_find_chrome_profiles_my(self, glob):
         profiles = cadmium.find_chrome_profiles('/cadmium/config/chromium')
 
